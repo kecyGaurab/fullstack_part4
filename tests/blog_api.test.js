@@ -67,7 +67,7 @@ test('a new blog list is added', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/);
 
   const response = await api.get('/api/blogs');
@@ -93,6 +93,18 @@ test('missing like value will have 0 likes', async () => {
   const index = response.body.length - 1;
   expect(response.body[index].likes).toBe(0);
 });
+
+test('throw error if title or url are missing', async () => {
+    const newBlog = {
+        title: 'Origin of life',
+        author: 'Charles Darwin',
+     
+      };
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400);
+})
 
 afterAll(() => {
   mongoose.connection.close();
