@@ -1,4 +1,5 @@
 const config = require('./utils/config')
+const usersRouter = require('./controllers/users')
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
@@ -9,9 +10,7 @@ const mongoose = require('mongoose')
 const logger = require('./utils/logger')
 
 logger.info('connecting to', config.MONGODB_URI)
-
-mongoose.set('useFindAndModify', false);
-
+mongoose.set('useCreateIndex', true)
 
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true,  useUnifiedTopology: true })
 .then(() => {
@@ -20,10 +19,11 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true,  useUnifiedTopolog
 .catch((error) => {
   logger.error('error connection to MongoDB:', error.message)
 })
+
 app.use(cors())
 app.use(bodyParser.json())
 app.use(middleware.requestLogger)
-
+app.use('/api/users',usersRouter)
 app.use('/api/blogs', blogsRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
